@@ -1,5 +1,6 @@
 #include <time.h>
 #include <unistd.h>
+#include <metal/timer.h>
 
 /* Get configurable system variables.  */
 
