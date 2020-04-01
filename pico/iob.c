@@ -23,6 +23,8 @@
 #include <metal/tty.h>
 #include <stdio.h>
 
+#ifdef _PICOLIBC__
+
 static int metal_putc(char c, FILE *file) {
     (void)file;
     metal_tty_putc(c);
@@ -42,3 +44,5 @@ static FILE __stdio =
     FDEV_SETUP_STREAM(metal_putc, metal_getc, metal_flush, _FDEV_SETUP_RW);
 
 FILE *const __iob[3] = {&__stdio, &__stdio, &__stdio};
+
+#endif
