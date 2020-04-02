@@ -98,12 +98,19 @@ build_triplet = @build@
 host_triplet = @host@
 
 ########################################################
+# libmetal-pico
+########################################################
+
+# Build support for picolibc if --with-builtin-libmetal-pico is passed to configure
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@am__append_1 = libmetal-pico.a
+
+########################################################
 # libgloss
 ########################################################
 
 # Freedom Metal has its own libgloss implementation that is only built when
 # --with-builtin-libgloss is passed to configure.
-@WITH_BUILTIN_LIBGLOSS_TRUE@am__append_1 = libmetal-gloss.a
+@WITH_BUILTIN_LIBGLOSS_TRUE@am__append_2 = libmetal-gloss.a
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -203,9 +210,15 @@ am__dirstamp = $(am__leading_dot)dirstamp
 libmetal_gloss_a_OBJECTS = $(am_libmetal_gloss_a_OBJECTS)
 libmetal_pico_a_AR = $(AR) $(ARFLAGS)
 libmetal_pico_a_LIBADD =
-am_libmetal_pico_a_OBJECTS = gloss/crt0.$(OBJEXT) pico/iob.$(OBJEXT) \
-	gloss/sys_exit.$(OBJEXT) pico/times.$(OBJEXT) \
-	gloss/sys_sbrk.$(OBJEXT) pico/sysconf.$(OBJEXT)
+am__libmetal_pico_a_SOURCES_DIST = gloss/crt0.S pico/iob.c \
+	gloss/sys_exit.c pico/times.c gloss/sys_sbrk.c pico/sysconf.c
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@am_libmetal_pico_a_OBJECTS =  \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	gloss/crt0.$(OBJEXT) \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	pico/iob.$(OBJEXT) \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	gloss/sys_exit.$(OBJEXT) \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	pico/times.$(OBJEXT) \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	gloss/sys_sbrk.$(OBJEXT) \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	pico/sysconf.$(OBJEXT)
 libmetal_pico_a_OBJECTS = $(am_libmetal_pico_a_OBJECTS)
 libmetal_a_AR = $(AR) $(ARFLAGS)
 libmetal_a_LIBADD =
@@ -286,7 +299,7 @@ am__v_CCLD_1 =
 SOURCES = $(libmetal_gloss_a_SOURCES) $(libmetal_pico_a_SOURCES) \
 	$(libmetal_a_SOURCES)
 DIST_SOURCES = $(am__libmetal_gloss_a_SOURCES_DIST) \
-	$(libmetal_pico_a_SOURCES) $(libmetal_a_SOURCES)
+	$(am__libmetal_pico_a_SOURCES_DIST) $(libmetal_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -480,11 +493,7 @@ BUILT_SOURCES = \
 ########################################################
 # libmetal
 ########################################################
-
-########################################################
-# libmetal-pico
-########################################################
-lib_LIBRARIES = libmetal.a libmetal-pico.a $(am__append_1)
+lib_LIBRARIES = libmetal.a $(am__append_1) $(am__append_2)
 libmetal_a_SOURCES = \
 	src/drivers/fixed-clock.c \
 	src/drivers/fixed-factor-clock.c \
@@ -546,13 +555,13 @@ libmetal_a_SOURCES = \
 	src/vector.S \
 	src/watchdog.c
 
-libmetal_pico_a_SOURCES = \
-	gloss/crt0.S \
-	pico/iob.c \
-	gloss/sys_exit.c \
-	pico/times.c \
-	gloss/sys_sbrk.c \
-	pico/sysconf.c
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@libmetal_pico_a_SOURCES = \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	gloss/crt0.S \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	pico/iob.c \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	gloss/sys_exit.c \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	pico/times.c \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	gloss/sys_sbrk.c \
+@WITH_BUILTIN_LIBMETAL_PICO_TRUE@	pico/sysconf.c
 
 @WITH_BUILTIN_LIBGLOSS_TRUE@libmetal_gloss_a_SOURCES = \
 @WITH_BUILTIN_LIBGLOSS_TRUE@	gloss/crt0.S \
