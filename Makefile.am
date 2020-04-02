@@ -132,6 +132,7 @@ libmetal_a_SOURCES = \
 	src/clock.c \
 	src/cpu.c \
 	src/entry.S \
+	src/scrub.S \
 	src/trap.S \
 	src/gpio.c \
 	src/i2c.c \
