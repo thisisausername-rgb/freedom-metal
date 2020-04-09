@@ -3,8 +3,6 @@
 #include <sys/time.h>
 #include <sys/times.h>
 
-extern int _gettimeofday(struct timeval *, void *);
-
 /* Timing information for current process. From
    newlib/libc/include/sys/times.h the tms struct fields are as follows:
 
@@ -18,24 +16,17 @@ extern int _gettimeofday(struct timeval *, void *);
    account for user vs system time, but for now we just return the total
    number of cycles since starting the program.  */
 clock_t _times(struct tms *buf) {
-    int rv;
-    // when called for the first time, initialize t0
-    static struct timeval t0;
-    if (t0.tv_sec == 0 && t0.tv_usec == 0)
-        _gettimeofday(&t0, 0);
-
-    struct timeval t;
-    _gettimeofday(&t, 0);
-
+    unsigned long long mcc;
     unsigned long long timebase;
-    rv = metal_timer_get_timebase_frequency(0, &timebase);
-    if (rv != 0) {
-        return -1;
-    }
 
-    long long utime =
-        (t.tv_sec - t0.tv_sec) * 1000000 + (t.tv_usec - t0.tv_usec);
-    buf->tms_utime = utime * timebase / 1000000;
-    buf->tms_stime = buf->tms_cstime = buf->tms_cutime = 0;
-    return 0;
+    metal_timer_get_timebase_frequency(0, &timebase);
+    metal_timer_get_cyclecount(0, &mcc);
+
+    /* Convert from native resolution to published resolution */
+    mcc = mcc * CLOCKS_PER_SEC / timebase;
+
+    buf->tms_stime = 0;
+    buf->tms_cutime = 0;
+    buf->tms_cstime = 0;
+    return buf->tms_utime = mcc;
 }
